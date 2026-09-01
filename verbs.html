@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verben - Notizbuch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#EDEFF1;--sheet:#FAFBFB;--ink:#16212B;--ink-soft:#5C6874;--rule:#CFD6DC;--accent:#1F5C8B;--flag:#8A6A1F}
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:16px;line-height:1.45}
+  .sheet{max-width:980px;margin:0 auto;background:var(--sheet);min-height:100vh;border-inline:1px solid var(--rule);padding:clamp(20px,5vw,56px) clamp(16px,5vw,56px) 80px}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(28px,6vw,40px);font-weight:600;letter-spacing:0;margin:0 0 4px}
+  .sub,.count,footer{color:var(--ink-soft);font-size:14px;margin:0}
+  .controls,.pages{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:18px;padding:12px 0;border-top:1px solid var(--rule)}
+  .pages{margin-top:0;padding-top:0;border-top:0;border-bottom:1px solid var(--rule)} .pages span{font-size:13px;color:var(--ink-soft);margin-right:4px}
+  button,input{font:inherit;font-size:13px} button{font-weight:500;background:transparent;color:var(--ink);border:1px solid var(--rule);border-radius:2px;padding:6px 11px;cursor:pointer}
+  button:hover{border-color:var(--ink-soft)} button[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  input[type="search"]{padding:6px 10px;border:1px solid var(--rule);border-radius:2px;background:var(--sheet);color:var(--ink);width:210px}
+  ol{list-style:none;margin:0;padding:0} li{display:grid;grid-template-columns:34px 1.2fr 1fr 1.1fr 1.1fr;gap:0 14px;align-items:baseline;padding:11px 0 9px;border-bottom:1px solid var(--rule)}
+  li.known .form,li.known .gloss{opacity:.42}.num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none}.num:hover{color:var(--ink)}
+  li.known .num::after{content:"\2713";margin-left:2px;color:var(--accent)}.form{font-family:"Source Serif 4",Georgia,serif;font-size:18px;line-height:1.3}.gloss{color:var(--ink)}
+  .label{font-family:"IBM Plex Sans",sans-serif;font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}.missing{color:var(--ink-soft);font-style:italic}.note{grid-column:2 / -1;font-size:13px;color:var(--flag);font-family:"Source Serif 4",Georgia,serif;font-style:italic;margin-top:3px;padding-left:11px;border-left:2px solid var(--flag)}
+  .message{padding:32px 0;color:var(--ink-soft);font-size:14px}.message code{font-family:ui-monospace,monospace;background:var(--paper);padding:2px 5px;border-radius:2px}
+  body.quiz .form,body.quiz .gloss{color:transparent;background:linear-gradient(var(--rule),var(--rule)) left bottom / 100% 1px no-repeat;cursor:pointer;min-height:1.4em}body.quiz li.shown .form,body.quiz li.shown .gloss{color:var(--ink);background:none}body.quiz .note{display:none}body.quiz li.shown .note{display:block}
+  footer{margin-top:28px}@media(max-width:700px){li{grid-template-columns:30px 1fr 1fr}.form:nth-of-type(3),.gloss{grid-column:2}.gloss{margin-top:2px}input[type="search"]{width:100%}}@media(prefers-reduced-motion:no-preference){.form,.gloss{transition:color .12s ease}}
+</style>
+</head>
+<body>
+<main class="sheet">
+  <header><h1 id="title">Verben</h1><p class="sub" id="subtitle">Loading verbs...</p></header>
+  <div class="controls"><button id="quiz" aria-pressed="false">Quiz mode</button><button id="shuffle">Shuffle</button><button id="reset">Reset order</button><button id="csv">Download CSV</button><input type="search" id="search" placeholder="Search German or English"></div>
+  <div class="pages" id="pages"><span>Pages</span></div>
+  <ol id="list"></ol><p class="count"><span id="knownCount">0</span> of <span id="total">0</span> marked known</p>
+  <footer>Click a number to mark a verb known. In quiz mode, click a row to reveal its forms.</footer>
+</main>
+<script>
+var DATA=[],PAGES=[],order=[],activePage=0,query="",known=new Set();
+var list=document.getElementById("list");
+function fail(err){list.innerHTML='<p class="message">Could not load <code>verbs.json</code>. Serve this folder over http, for example with <code>python3 -m http.server</code>.<br><br>Details: '+String(err)+"</p>";document.getElementById("subtitle").textContent="";}
+fetch("verbs.json",{cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("HTTP "+response.status);return response.json();}).then(function(doc){DATA=doc.entries||[];PAGES=doc.pages||[];document.getElementById("title").textContent=doc.title||"Verben";document.getElementById("subtitle").textContent=DATA.length+" verbs. "+(doc.subtitle||"");document.getElementById("total").textContent=DATA.length;order=DATA.map(function(_,index){return index;});buildPages();loadKnown();render();}).catch(fail);
+function buildPages(){var wrap=document.getElementById("pages");function add(label,index){var button=document.createElement("button");button.textContent=label;button.setAttribute("aria-pressed",index===activePage);button.onclick=function(){activePage=index;Array.prototype.forEach.call(wrap.querySelectorAll("button"),function(item){item.setAttribute("aria-pressed",item===button);});render();};wrap.append(button);}add("All",0);PAGES.forEach(function(page,index){add(page[0]+"-"+page[1],index+1);});}
+function visible(verb){if(activePage>0){var page=PAGES[activePage-1];if(verb.n<page[0]||verb.n>page[1])return false;}return !query||[verb.infinitive,verb.preterite,verb.participle,verb.en].join(" ").toLowerCase().indexOf(query)!==-1;}
+function text(value){var span=document.createElement("span");span.textContent=value||"-";span.className=value?"form":"form missing";return span;}
+function render(){list.innerHTML="";var shown=0;order.forEach(function(index){var verb=DATA[index];if(!visible(verb))return;shown++;var li=document.createElement("li");li.dataset.index=index;if(known.has(verb.n))li.classList.add("known");var number=document.createElement("span");number.className="num";number.textContent=verb.n;number.tabIndex=0;number.setAttribute("role","button");number.setAttribute("aria-label","Mark "+verb.infinitive+" known");var infinitive=text(verb.infinitive);var preterite=text(verb.preterite);var participle=text(verb.participle);var gloss=document.createElement("span");gloss.className=verb.en?"gloss":"gloss missing";gloss.textContent=verb.en||"-";li.append(number,infinitive,preterite,participle,gloss);if(verb.note){var note=document.createElement("span");note.className="note";note.textContent=verb.note;li.append(note);}list.append(li);});if(!shown)list.innerHTML='<p class="message">No verbs match. Clear the search or pick another page.</p>';document.getElementById("knownCount").textContent=known.size;}
+list.addEventListener("click",function(event){var li=event.target.closest("li");if(!li)return;if(event.target.classList.contains("num")){var n=DATA[li.dataset.index].n;if(known.has(n))known.delete(n);else known.add(n);li.classList.toggle("known");document.getElementById("knownCount").textContent=known.size;saveKnown();return;}if(document.body.classList.contains("quiz"))li.classList.toggle("shown");});
+list.addEventListener("keydown",function(event){if((event.key==="Enter"||event.key===" ")&&event.target.classList.contains("num")){event.preventDefault();event.target.click();}});
+document.getElementById("quiz").onclick=function(){var on=document.body.classList.toggle("quiz");this.setAttribute("aria-pressed",on);Array.prototype.forEach.call(document.querySelectorAll("li.shown"),function(li){li.classList.remove("shown");});};
+document.getElementById("shuffle").onclick=function(){for(var index=order.length-1;index>0;index--){var other=Math.floor(Math.random()*(index+1));var current=order[index];order[index]=order[other];order[other]=current;}render();};
+document.getElementById("reset").onclick=function(){order=DATA.map(function(_,index){return index;});render();};document.getElementById("search").addEventListener("input",function(event){query=event.target.value.trim().toLowerCase();render();});
+document.getElementById("csv").onclick=function(){function escape(value){return '"'+String(value||"").replace(/"/g,'""')+'"';}var rows=[["n","infinitive","preterite","participle","english"].map(escape).join(",")];DATA.forEach(function(verb){rows.push([verb.n,verb.infinitive,verb.preterite,verb.participle,verb.en].map(escape).join(","));});var blob=new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv;charset=utf-8"});var link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="verben.csv";link.click();URL.revokeObjectURL(link.href);};
+function saveKnown(){try{localStorage.setItem("verben:known",JSON.stringify(Array.from(known)));}catch(error){}}function loadKnown(){try{var raw=localStorage.getItem("verben:known");if(raw)JSON.parse(raw).forEach(function(n){known.add(n);});}catch(error){}}
+</script>
+</body>
+</html>
