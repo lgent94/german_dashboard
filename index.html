@@ -9,51 +9,55 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#EDEFF1; --sheet:#FAFBFB;
-    --ink:#16212B; --ink-soft:#5C6874; --rule:#CFD6DC;
-    --der:#1F5C8B; --die:#A33B5E; --das:#3F7A50; --other:#6E6560; --flag:#8A6A1F;
+    --paper:#e7eef2; --sheet:#fffefd; --ink:#17313a; --ink-soft:#61737a;
+    --rule:#d5e0e3; --teal:#087e8b; --teal-dark:#05636e; --coral:#df735f;
+    --der:#206a9b; --die:#b04b67; --das:#398055; --other:#6e6560; --flag:#9b6a16;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);
+  body{background:linear-gradient(135deg,#d9e8e9 0%,var(--paper) 44%,#f2e6d7 100%);color:var(--ink);
     font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
-  .sheet{max-width:780px;margin:0 auto;background:var(--sheet);min-height:100vh;
-    border-left:1px solid var(--rule);border-right:1px solid var(--rule);
-    padding:clamp(20px,5vw,56px) clamp(16px,5vw,56px) 80px}
+    font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;min-height:100vh}
+  .sheet{max-width:900px;margin:32px auto;background:var(--sheet);min-height:calc(100vh - 64px);
+    border:1px solid rgba(23,49,58,.1);border-radius:8px;box-shadow:0 18px 48px rgba(28,59,68,.12);
+    padding:clamp(24px,5vw,56px) clamp(18px,5vw,64px) 56px}
+  header{position:relative;padding-bottom:22px;border-bottom:1px solid var(--rule)}
+  header::after{content:"";position:absolute;bottom:-2px;left:0;width:72px;height:3px;background:var(--coral)}
   h1{font-family:"Source Serif 4",Georgia,serif;font-weight:600;
-    font-size:clamp(28px,6vw,40px);letter-spacing:-0.015em;margin:0 0 4px}
+    font-size:clamp(32px,6vw,44px);letter-spacing:0;margin:0 0 4px;color:var(--teal-dark)}
   .sub{color:var(--ink-soft);font-size:14px;margin:0}
-  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:18px 0 0;font-size:13px;color:var(--ink-soft)}
+  .nav{display:flex;gap:4px;margin:20px 0 0;font-size:13px}
+  .nav a{color:var(--ink-soft);text-decoration:none;padding:7px 12px;border-radius:4px;font-weight:600}
+  .nav a:hover{background:#eef5f4;color:var(--teal-dark)}.nav a[aria-current="page"]{background:var(--teal);color:#fff}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0;font-size:13px;color:var(--ink-soft)}
+  .legend span{background:#f5f8f8;border:1px solid var(--rule);padding:4px 8px;border-radius:4px}
   .legend b{font-weight:600}
   .legend .der{color:var(--der)} .legend .die{color:var(--die)} .legend .das{color:var(--das)}
 
-  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:12px 0;
-    border-top:1px solid var(--rule);align-items:center}
-  .pages{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 12px;
-    border-bottom:1px solid var(--rule);align-items:center}
-  .pages span{font-size:13px;color:var(--ink-soft);margin-right:4px}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:14px;background:#f3f7f7;border:1px solid var(--rule);border-radius:6px;align-items:center}
+  .pages{display:flex;flex-wrap:wrap;gap:6px;padding:16px 0 14px;border-bottom:1px solid var(--rule);align-items:center}
+  .pages span{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-right:6px}
   button{font:inherit;font-size:13px;font-weight:500;background:transparent;color:var(--ink);
-    border:1px solid var(--rule);border-radius:2px;padding:6px 11px;cursor:pointer}
-  button:hover{border-color:var(--ink-soft)}
-  button[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+    border:1px solid #bdcfd2;border-radius:4px;padding:7px 11px;cursor:pointer;transition:background .15s ease,border-color .15s ease,color .15s ease}
+  button:hover{border-color:var(--teal);color:var(--teal-dark);background:#fff}
+  button[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
   button:focus-visible,input:focus-visible{outline:2px solid var(--der);outline-offset:2px}
-  input[type="search"]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--rule);
-    border-radius:2px;background:var(--sheet);color:var(--ink);width:190px}
-  .count{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  input[type="search"]{font:inherit;font-size:13px;padding:7px 10px;border:1px solid #bdcfd2;border-radius:4px;background:#fff;color:var(--ink);width:200px;margin-left:auto}
+  .count{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin:18px 0 0;text-align:right}
 
   ol{list-style:none;margin:0;padding:0}
   li{display:grid;grid-template-columns:34px 1fr 1fr;gap:0 14px;align-items:baseline;
-    padding:11px 0 9px;border-bottom:1px solid var(--rule)}
+    padding:14px 12px 12px;border-bottom:1px solid var(--rule);transition:background .15s ease}
+  li:hover{background:#f6fbfa}li:first-child{margin-top:4px}
   li.known .term,li.known .gloss{opacity:.42}
-  .num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none}
-  .num:hover{color:var(--ink)}
+  .num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none;background:#edf3f4;border-radius:50%;width:24px;height:24px;display:grid;place-items:center}
+  .num:hover{color:#fff;background:var(--teal)}
   li.known .num::after{content:"\2713";margin-left:2px;color:var(--das)}
-  .term{font-family:"Source Serif 4",Georgia,serif;font-size:19px;line-height:1.3}
+  li.known .num{background:#e5f2e8}li.known .num::after{color:var(--das)}.term{font-family:"Source Serif 4",Georgia,serif;font-size:20px;line-height:1.3}
   .art{font-weight:600}
   .art.der{color:var(--der)} .art.die{color:var(--die)} .art.das{color:var(--das)}
   .pos{font-family:"IBM Plex Sans",sans-serif;font-size:12px;color:var(--other);margin-left:6px}
-  .gloss{font-size:16px;color:var(--ink)}
+  .gloss{font-size:15px;color:var(--ink);padding-top:2px}
   .gloss.empty{color:var(--ink-soft);font-style:italic}
   .note{grid-column:2 / -1;font-size:13px;color:var(--ink-soft);
     font-family:"Source Serif 4",Georgia,serif;font-style:italic;margin-top:3px}
@@ -71,12 +75,13 @@
   body.quiz .note,body.quiz .flag{display:none}
   body.quiz li.shown .note,body.quiz li.shown .flag{display:block}
 
-  footer{margin-top:28px;font-size:13px;color:var(--ink-soft)}
+  footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-soft)}
   @media (max-width:640px){
+    .sheet{margin:0;border:0;border-radius:0;min-height:100vh;box-shadow:none}.controls{padding:10px}.controls button{flex:1 0 auto}
     li{grid-template-columns:30px 1fr}
     .gloss{grid-column:2;margin-top:2px}
     .note,.flag{grid-column:2}
-    input[type="search"]{width:100%}
+    input[type="search"]{width:100%;margin-left:0}
   }
   @media (prefers-reduced-motion:no-preference){.gloss{transition:color .12s ease}}
 </style>
@@ -86,6 +91,7 @@
   <header>
     <h1 id="title">Wortschatz</h1>
     <p class="sub" id="subtitle">Loading words…</p>
+    <nav class="nav" aria-label="Study sets"><a href="index.html" aria-current="page">Wortschatz</a><a href="verbs.html">Verben</a></nav>
     <div class="legend">
       <span><b class="der">der</b> masculine</span>
       <span><b class="die">die</b> feminine</span>

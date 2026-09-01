@@ -8,32 +8,34 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
 <style>
-  :root{--paper:#EDEFF1;--sheet:#FAFBFB;--ink:#16212B;--ink-soft:#5C6874;--rule:#CFD6DC;--accent:#1F5C8B;--flag:#8A6A1F}
+  :root{--paper:#e7eef2;--sheet:#fffefd;--ink:#17313a;--ink-soft:#61737a;--rule:#d5e0e3;--accent:#087e8b;--accent-dark:#05636e;--coral:#df735f;--flag:#9b6a16}
   *{box-sizing:border-box} html,body{margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:16px;line-height:1.45}
-  .sheet{max-width:980px;margin:0 auto;background:var(--sheet);min-height:100vh;border-inline:1px solid var(--rule);padding:clamp(20px,5vw,56px) clamp(16px,5vw,56px) 80px}
-  h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(28px,6vw,40px);font-weight:600;letter-spacing:0;margin:0 0 4px}
+  body{background:linear-gradient(135deg,#d9e8e9 0%,var(--paper) 44%,#f2e6d7 100%);color:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:16px;line-height:1.45;min-height:100vh}
+  .sheet{max-width:1040px;margin:32px auto;background:var(--sheet);min-height:calc(100vh - 64px);border:1px solid rgba(23,49,58,.1);border-radius:8px;box-shadow:0 18px 48px rgba(28,59,68,.12);padding:clamp(24px,5vw,56px) clamp(18px,5vw,64px) 56px}
+  header{position:relative;padding-bottom:22px;border-bottom:1px solid var(--rule)}header::after{content:"";position:absolute;bottom:-2px;left:0;width:72px;height:3px;background:var(--coral)}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(32px,6vw,44px);font-weight:600;letter-spacing:0;margin:0 0 4px;color:var(--accent-dark)}
   .sub,.count,footer{color:var(--ink-soft);font-size:14px;margin:0}
-  .controls,.pages{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:18px;padding:12px 0;border-top:1px solid var(--rule)}
-  .pages{margin-top:0;padding-top:0;border-top:0;border-bottom:1px solid var(--rule)} .pages span{font-size:13px;color:var(--ink-soft);margin-right:4px}
-  button,input{font:inherit;font-size:13px} button{font-weight:500;background:transparent;color:var(--ink);border:1px solid var(--rule);border-radius:2px;padding:6px 11px;cursor:pointer}
-  button:hover{border-color:var(--ink-soft)} button[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+  .nav{display:flex;gap:4px;margin:20px 0 0;font-size:13px}.nav a{color:var(--ink-soft);text-decoration:none;padding:7px 12px;border-radius:4px;font-weight:600}.nav a:hover{background:#eef5f4;color:var(--accent-dark)}.nav a[aria-current="page"]{background:var(--accent);color:#fff}
+  .controls,.pages{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:24px;padding:14px;background:#f3f7f7;border:1px solid var(--rule);border-radius:6px}.pages{margin-top:0;padding:16px 0 14px;background:transparent;border-inline:0;border-top:0;border-radius:0;border-bottom:1px solid var(--rule)} .pages span{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-right:6px}
+  button,input{font:inherit;font-size:13px} button{font-weight:500;background:transparent;color:var(--ink);border:1px solid #bdcfd2;border-radius:4px;padding:7px 11px;cursor:pointer;transition:background .15s ease,border-color .15s ease,color .15s ease}
+  button:hover{border-color:var(--accent);color:var(--accent-dark);background:#fff} button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
   button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  input[type="search"]{padding:6px 10px;border:1px solid var(--rule);border-radius:2px;background:var(--sheet);color:var(--ink);width:210px}
-  ol{list-style:none;margin:0;padding:0} li{display:grid;grid-template-columns:34px 1.2fr 1fr 1.1fr 1.1fr;gap:0 14px;align-items:baseline;padding:11px 0 9px;border-bottom:1px solid var(--rule)}
-  li.known .form,li.known .gloss{opacity:.42}.num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none}.num:hover{color:var(--ink)}
-  li.known .num::after{content:"\2713";margin-left:2px;color:var(--accent)}.form{font-family:"Source Serif 4",Georgia,serif;font-size:18px;line-height:1.3}.gloss{color:var(--ink)}
+  input[type="search"]{padding:7px 10px;border:1px solid #bdcfd2;border-radius:4px;background:#fff;color:var(--ink);width:210px;margin-left:auto}
+  ol{list-style:none;margin:0;padding:0} li{display:grid;grid-template-columns:34px 1.2fr 1fr 1.1fr 1.1fr;gap:0 14px;align-items:baseline;padding:14px 12px 12px;border-bottom:1px solid var(--rule);transition:background .15s ease}li:hover{background:#f6fbfa}li:first-child{margin-top:4px}
+  li.known .form,li.known .gloss{opacity:.42}.num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none;background:#edf3f4;border-radius:50%;width:24px;height:24px;display:grid;place-items:center}.num:hover{color:#fff;background:var(--accent)}
+  li.known .num{background:#e5f2e8}li.known .num::after{content:"\2713";margin-left:2px;color:#398055}.form{font-family:"Source Serif 4",Georgia,serif;font-size:18px;line-height:1.3}.gloss{color:var(--ink);font-size:15px;padding-top:2px}
   .label{font-family:"IBM Plex Sans",sans-serif;font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}.missing{color:var(--ink-soft);font-style:italic}.note{grid-column:2 / -1;font-size:13px;color:var(--flag);font-family:"Source Serif 4",Georgia,serif;font-style:italic;margin-top:3px;padding-left:11px;border-left:2px solid var(--flag)}
   .message{padding:32px 0;color:var(--ink-soft);font-size:14px}.message code{font-family:ui-monospace,monospace;background:var(--paper);padding:2px 5px;border-radius:2px}
   body.quiz .form,body.quiz .gloss{color:transparent;background:linear-gradient(var(--rule),var(--rule)) left bottom / 100% 1px no-repeat;cursor:pointer;min-height:1.4em}body.quiz li.shown .form,body.quiz li.shown .gloss{color:var(--ink);background:none}body.quiz .note{display:none}body.quiz li.shown .note{display:block}
-  footer{margin-top:28px}@media(max-width:700px){li{grid-template-columns:30px 1fr 1fr}.form:nth-of-type(3),.gloss{grid-column:2}.gloss{margin-top:2px}input[type="search"]{width:100%}}@media(prefers-reduced-motion:no-preference){.form,.gloss{transition:color .12s ease}}
+  .column-headings{display:grid;grid-template-columns:34px 1.2fr 1fr 1.1fr 1.1fr;gap:14px;padding:14px 12px 7px;border-bottom:1px solid var(--rule);color:var(--ink-soft);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}.count{margin:18px 0 0;text-align:right}footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--rule)}@media(max-width:700px){.sheet{margin:0;border:0;border-radius:0;min-height:100vh;box-shadow:none}.controls{padding:10px}.controls button{flex:1 0 auto}.column-headings{grid-template-columns:30px 1fr 1fr;padding-inline:12px}.column-headings .participle,.column-headings .meaning{display:none}li{grid-template-columns:30px 1fr 1fr}.form:nth-of-type(3),.gloss{grid-column:2}.gloss{margin-top:2px}input[type="search"]{width:100%;margin-left:0}}@media(prefers-reduced-motion:no-preference){.form,.gloss{transition:color .12s ease}}
 </style>
 </head>
 <body>
 <main class="sheet">
-  <header><h1 id="title">Verben</h1><p class="sub" id="subtitle">Loading verbs...</p></header>
+  <header><h1 id="title">Verben</h1><p class="sub" id="subtitle">Loading verbs...</p><nav class="nav" aria-label="Study sets"><a href="index.html">Wortschatz</a><a href="verbs.html" aria-current="page">Verben</a></nav></header>
   <div class="controls"><button id="quiz" aria-pressed="false">Quiz mode</button><button id="shuffle">Shuffle</button><button id="reset">Reset order</button><button id="csv">Download CSV</button><input type="search" id="search" placeholder="Search German or English"></div>
   <div class="pages" id="pages"><span>Pages</span></div>
+  <div class="column-headings" aria-hidden="true"><span></span><span>Infinitive</span><span>Präteritum</span><span class="participle">Partizip II</span><span class="meaning">English</span></div>
   <ol id="list"></ol><p class="count"><span id="knownCount">0</span> of <span id="total">0</span> marked known</p>
   <footer>Click a number to mark a verb known. In quiz mode, click a row to reveal its forms.</footer>
 </main>
