@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unregelmäßige Verben - Notizbuch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#e7eef2;--sheet:#fffefd;--ink:#17313a;--ink-soft:#61737a;--rule:#d5e0e3;--teal:#087e8b;--teal-dark:#05636e;--coral:#df735f;--good:#e4f1dc;--good-ink:#28581a;--bad:#fae6e3;--bad-ink:#962e2b}
+  *{box-sizing:border-box}html,body{margin:0;padding:0}body{min-height:100vh;background:linear-gradient(135deg,#d9e8e9 0%,var(--paper) 44%,#f2e6d7 100%);color:var(--ink);font:16px/1.45 "IBM Plex Sans",sans-serif}
+  .sheet{max-width:720px;min-height:calc(100vh - 64px);margin:32px auto;padding:clamp(24px,5vw,56px);background:var(--sheet);border:1px solid rgba(23,49,58,.1);border-radius:8px;box-shadow:0 18px 48px rgba(28,59,68,.12)}
+  header{position:relative;padding-bottom:22px;border-bottom:1px solid var(--rule)}header::after{content:"";position:absolute;bottom:-2px;left:0;width:72px;height:3px;background:var(--coral)}h1{margin:0;color:var(--teal-dark);font:600 clamp(30px,6vw,42px)/1.15 "Source Serif 4",Georgia,serif}.sub{margin:5px 0 0;color:var(--ink-soft);font-size:14px}
+  .nav{display:flex;flex-wrap:wrap;gap:4px;margin-top:20px;font-size:13px}.nav a{padding:7px 12px;border-radius:4px;color:var(--ink-soft);font-weight:600;text-decoration:none}.nav a:hover{background:#eef5f4;color:var(--teal-dark)}.nav a[aria-current="page"]{background:var(--teal);color:#fff}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 14px;color:var(--ink-soft);font-size:13px;font-variant-numeric:tabular-nums}.score{white-space:nowrap}.score strong{color:var(--teal-dark)}button{border:1px solid #bdcfd2;border-radius:4px;padding:7px 11px;background:#fff;color:var(--ink);font:500 13px "IBM Plex Sans",sans-serif;cursor:pointer;transition:background .15s ease,border-color .15s ease,color .15s ease}button:hover{border-color:var(--teal);color:var(--teal-dark)}button:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .verb-card{padding:24px;background:#f3f7f7;border:1px solid var(--rule);border-radius:6px}.eyebrow{margin:0 0 3px;color:var(--ink-soft);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}.word{font:600 32px/1.2 "Source Serif 4",Georgia,serif;color:var(--teal-dark)}.meaning{margin:4px 0 0;color:var(--ink-soft);font-size:15px}
+  form{margin-top:20px}.field{display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:center;margin:10px 0}.field label{font-size:14px;font-weight:600}.field input{width:100%;height:42px;padding:0 12px;border:1px solid #bdcfd2;border-radius:4px;background:#fff;color:var(--ink);font:16px "IBM Plex Sans",sans-serif}.field input.correct{border-color:#579338;background:#f8fcf4}.field input.incorrect{border-color:var(--bad-ink);background:#fffafa}
+  #feedback{display:none;min-height:48px;margin:18px 0;padding:12px 14px;border-radius:5px;font-size:14px}.ok{display:block!important;background:var(--good);color:var(--good-ink)}.bad{display:block!important;background:var(--bad);color:var(--bad-ink)}.actions{display:flex;gap:10px}.actions button{flex:1;height:42px}.actions button:first-child{background:var(--teal);border-color:var(--teal);color:#fff}.actions button:first-child:hover{background:var(--teal-dark);border-color:var(--teal-dark)}.message{padding:24px;color:var(--bad-ink);background:var(--bad);border-radius:6px}
+  @media(max-width:640px){.sheet{min-height:100vh;margin:0;border:0;border-radius:0;box-shadow:none}.topbar{align-items:flex-start;flex-direction:column}.field{grid-template-columns:1fr;gap:4px}.verb-card{padding:20px}}
+</style>
+</head>
+<body>
+<main class="sheet">
+  <header><h1 id="title">Unregelmäßige Verben</h1><p class="sub" id="subtitle">Loading drill...</p><nav class="nav" aria-label="Study sets"><a href="index.html">Wortschatz</a><a href="verbs.html">Verben</a><a href="irregular-verbs.html" aria-current="page">Irregular verbs</a></nav></header>
+  <div class="topbar"><span id="progress">Verb 0 of 0</span><span class="score">Score: <strong id="score">0</strong>/<span id="attempted">0</span> <button id="reset" type="button">Reset</button></span></div>
+  <section class="verb-card"><p class="eyebrow">Infinitive</p><div class="word" id="infinitive"></div><p class="meaning" id="meaning"></p></section>
+  <form id="drill" autocomplete="off"><div class="field"><label for="present">er/sie/es</label><input id="present" placeholder="3rd person present"></div><div class="field"><label for="preterite">Präteritum</label><input id="preterite" placeholder="simple past"></div><div class="field"><label for="perfect">Perfekt</label><input id="perfect" placeholder="hat/ist + participle"></div><div id="feedback" role="status"></div><div class="actions"><button id="check" type="submit">Check</button><button id="next" type="button">Next verb</button></div></form>
+</main>
+<script>
+var verbs=[],order=[],position=0,score=0,attempted=0,checked=false;
+var fields={present:document.getElementById("present"),preterite:document.getElementById("preterite"),perfect:document.getElementById("perfect")};
+function normalize(value){return value.trim().toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");}
+function shuffle(items){for(var index=items.length-1;index>0;index--){var other=Math.floor(Math.random()*(index+1));var current=items[index];items[index]=items[other];items[other]=current;}return items;}
+function showError(error){document.getElementById("drill").innerHTML='<p class="message">Could not load <code>irregular-verbs.json</code>. Serve this folder over http, for example with <code>python3 -m http.server</code>.<br><br>Details: '+String(error)+"</p>";}
+function loadVerb(){var verb=verbs[order[position]];document.getElementById("infinitive").textContent=verb.infinitive;document.getElementById("meaning").textContent=verb.en;document.getElementById("progress").textContent="Verb "+(position+1)+" of "+verbs.length;Object.keys(fields).forEach(function(key){fields[key].value="";fields[key].className="";});document.getElementById("feedback").className="";document.getElementById("feedback").textContent="";checked=false;fields.present.focus();}
+function checkAnswers(){if(checked)return;var verb=verbs[order[position]],allCorrect=true;["present","preterite","perfect"].forEach(function(key){var correct=normalize(fields[key].value)===normalize(verb[key]);fields[key].className=correct?"correct":"incorrect";if(!correct)allCorrect=false;});attempted++;if(allCorrect)score++;checked=true;var feedback=document.getElementById("feedback");feedback.className=allCorrect?"ok":"bad";feedback.textContent=allCorrect?"Correct.":"Correct forms: "+verb.present+" - "+verb.preterite+" - "+verb.perfect;document.getElementById("score").textContent=score;document.getElementById("attempted").textContent=attempted;}
+function nextVerb(){position=(position+1)%verbs.length;if(position===0)shuffle(order);loadVerb();}
+function reset(){order=shuffle(verbs.map(function(_,index){return index;}));position=0;score=0;attempted=0;document.getElementById("score").textContent=0;document.getElementById("attempted").textContent=0;loadVerb();}
+document.getElementById("drill").addEventListener("submit",function(event){event.preventDefault();checkAnswers();});document.getElementById("next").onclick=nextVerb;document.getElementById("reset").onclick=reset;Object.keys(fields).forEach(function(key){fields[key].addEventListener("keydown",function(event){if(event.key==="Enter"&&checked){event.preventDefault();nextVerb();}});});
+fetch("irregular-verbs.json",{cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("HTTP "+response.status);return response.json();}).then(function(data){verbs=data.entries||[];if(!verbs.length)throw new Error("No verbs found");document.getElementById("title").textContent=data.title||"Unregelmäßige Verben";document.getElementById("subtitle").textContent=verbs.length+" verbs. "+(data.subtitle||"");reset();}).catch(showError);
+</script>
+</body>
+</html>
