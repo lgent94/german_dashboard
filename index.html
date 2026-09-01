@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wortschatz — Notizbuch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEFF1; --sheet:#FAFBFB;
+    --ink:#16212B; --ink-soft:#5C6874; --rule:#CFD6DC;
+    --der:#1F5C8B; --die:#A33B5E; --das:#3F7A50; --other:#6E6560; --flag:#8A6A1F;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .sheet{max-width:780px;margin:0 auto;background:var(--sheet);min-height:100vh;
+    border-left:1px solid var(--rule);border-right:1px solid var(--rule);
+    padding:clamp(20px,5vw,56px) clamp(16px,5vw,56px) 80px}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-weight:600;
+    font-size:clamp(28px,6vw,40px);letter-spacing:-0.015em;margin:0 0 4px}
+  .sub{color:var(--ink-soft);font-size:14px;margin:0}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:18px 0 0;font-size:13px;color:var(--ink-soft)}
+  .legend b{font-weight:600}
+  .legend .der{color:var(--der)} .legend .die{color:var(--die)} .legend .das{color:var(--das)}
+
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:12px 0;
+    border-top:1px solid var(--rule);align-items:center}
+  .pages{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 12px;
+    border-bottom:1px solid var(--rule);align-items:center}
+  .pages span{font-size:13px;color:var(--ink-soft);margin-right:4px}
+  button{font:inherit;font-size:13px;font-weight:500;background:transparent;color:var(--ink);
+    border:1px solid var(--rule);border-radius:2px;padding:6px 11px;cursor:pointer}
+  button:hover{border-color:var(--ink-soft)}
+  button[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--der);outline-offset:2px}
+  input[type="search"]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--rule);
+    border-radius:2px;background:var(--sheet);color:var(--ink);width:190px}
+  .count{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+  ol{list-style:none;margin:0;padding:0}
+  li{display:grid;grid-template-columns:34px 1fr 1fr;gap:0 14px;align-items:baseline;
+    padding:11px 0 9px;border-bottom:1px solid var(--rule)}
+  li.known .term,li.known .gloss{opacity:.42}
+  .num{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none}
+  .num:hover{color:var(--ink)}
+  li.known .num::after{content:"\2713";margin-left:2px;color:var(--das)}
+  .term{font-family:"Source Serif 4",Georgia,serif;font-size:19px;line-height:1.3}
+  .art{font-weight:600}
+  .art.der{color:var(--der)} .art.die{color:var(--die)} .art.das{color:var(--das)}
+  .pos{font-family:"IBM Plex Sans",sans-serif;font-size:12px;color:var(--other);margin-left:6px}
+  .gloss{font-size:16px;color:var(--ink)}
+  .gloss.empty{color:var(--ink-soft);font-style:italic}
+  .note{grid-column:2 / -1;font-size:13px;color:var(--ink-soft);
+    font-family:"Source Serif 4",Georgia,serif;font-style:italic;margin-top:3px}
+  .flag{grid-column:2 / -1;font-size:12.5px;color:var(--flag);margin-top:3px;
+    padding-left:11px;border-left:2px solid var(--flag)}
+  .message{padding:32px 0;color:var(--ink-soft);font-size:14px}
+  .message code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;
+    background:var(--paper);padding:2px 5px;border-radius:2px}
+
+  body.quiz .gloss{color:transparent;
+    background:linear-gradient(var(--rule),var(--rule)) left bottom / 100% 1px no-repeat;
+    cursor:pointer;min-height:1.4em}
+  body.quiz li.shown .gloss{color:var(--ink);background:none}
+  body.quiz li.shown .gloss.empty{color:var(--ink-soft)}
+  body.quiz .note,body.quiz .flag{display:none}
+  body.quiz li.shown .note,body.quiz li.shown .flag{display:block}
+
+  footer{margin-top:28px;font-size:13px;color:var(--ink-soft)}
+  @media (max-width:640px){
+    li{grid-template-columns:30px 1fr}
+    .gloss{grid-column:2;margin-top:2px}
+    .note,.flag{grid-column:2}
+    input[type="search"]{width:100%}
+  }
+  @media (prefers-reduced-motion:no-preference){.gloss{transition:color .12s ease}}
+</style>
+</head>
+<body>
+<main class="sheet">
+  <header>
+    <h1 id="title">Wortschatz</h1>
+    <p class="sub" id="subtitle">Loading words…</p>
+    <div class="legend">
+      <span><b class="der">der</b> masculine</span>
+      <span><b class="die">die</b> feminine</span>
+      <span><b class="das">das</b> neuter</span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button id="quiz" aria-pressed="false">Quiz mode</button>
+    <button id="dir" aria-pressed="false">Ask in English</button>
+    <button id="shuffle">Shuffle</button>
+    <button id="reset">Reset order</button>
+    <button id="csv">Download CSV</button>
+    <input type="search" id="search" placeholder="Search German or English">
+  </div>
+  <div class="pages" id="pages"><span>Pages</span></div>
+
+  <ol id="list"></ol>
+  <p class="count"><span id="knownCount">0</span> of <span id="total">0</span> marked known</p>
+
+  <footer>
+    Click a number to mark a word known. In quiz mode, click the blank side to reveal it.
+    Amber notes are corrections or open questions on the original page.
+  </footer>
+</main>
+
+<script>
+var DATA = [], PAGES = [];
+var list = document.getElementById("list");
+var order = [], reversed = false, activePage = 0, query = "";
+var known = new Set();
+
+function fail(err){
+  list.innerHTML = "";
+  var p = document.createElement("p");
+  p.className = "message";
+  p.innerHTML = "Could not load <code>vocab.json</code>. This page reads the words from that file, "
+    + "so it needs to be served over http rather than opened directly from disk. "
+    + "From the folder holding both files, run <code>python3 -m http.server</code> and open "
+    + "<code>http://localhost:8000</code>. On a host like GitHub Pages it works as-is."
+    + "<br><br>Details: " + String(err);
+  list.append(p);
+  document.getElementById("subtitle").textContent = "";
+}
+
+fetch("vocab.json", {cache: "no-store"})
+  .then(function(r){
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  })
+  .then(function(doc){
+    DATA = doc.entries || [];
+    PAGES = doc.pages || [];
+    document.getElementById("title").textContent = doc.title || "Wortschatz";
+    document.getElementById("subtitle").textContent =
+      DATA.length + " words. " + (doc.subtitle || "");
+    document.getElementById("total").textContent = DATA.length;
+    order = DATA.map(function(_,i){ return i; });
+    buildPages();
+    return loadKnown();
+  })
+  .then(render)
+  .catch(fail);
+
+function buildPages(){
+  var wrap = document.getElementById("pages");
+  function mk(label, idx){
+    var b = document.createElement("button");
+    b.textContent = label;
+    b.setAttribute("aria-pressed", idx === activePage);
+    b.onclick = function(){
+      activePage = idx;
+      Array.prototype.forEach.call(wrap.querySelectorAll("button"), function(x){
+        x.setAttribute("aria-pressed", x === b);
+      });
+      render();
+    };
+    wrap.append(b);
+  }
+  mk("All", 0);
+  PAGES.forEach(function(p,i){ mk(p[0] + "\u2013" + p[1], i+1); });
+}
+
+function visible(d){
+  if(activePage > 0){
+    var p = PAGES[activePage-1];
+    if(d.n < p[0] || d.n > p[1]) return false;
+  }
+  if(query){
+    var hay = ((d.art||"") + " " + d.word + " " + (d.extra||"") + " " + (d.en||"")).toLowerCase();
+    if(hay.indexOf(query) === -1) return false;
+  }
+  return true;
+}
+
+function render(){
+  list.innerHTML = "";
+  var shown = 0;
+  order.forEach(function(i){
+    var d = DATA[i];
+    if(!visible(d)) return;
+    shown++;
+    var li = document.createElement("li");
+    li.dataset.i = i;
+    if(known.has(d.n)) li.classList.add("known");
+
+    var num = document.createElement("span");
+    num.className = "num";
+    num.textContent = d.n;
+    num.tabIndex = 0;
+    num.setAttribute("role","button");
+    num.setAttribute("aria-label","Mark " + d.word + " known");
+
+    var german = document.createElement("span");
+    german.innerHTML = (d.art ? '<span class="art ' + d.art + '">' + d.art + '</span> ' : '')
+      + d.word + (d.extra || '')
+      + (d.pos ? '<span class="pos">' + d.pos + '</span>' : '');
+
+    var english = document.createElement("span");
+    english.textContent = d.en || "not filled in";
+
+    var a = reversed ? english : german;
+    var b = reversed ? german : english;
+    a.className = "term";
+    b.className = "gloss" + (!d.en ? " empty" : "");
+
+    li.append(num, a, b);
+
+    if(d.note){
+      var nEl = document.createElement("span");
+      nEl.className = "note"; nEl.textContent = d.note; li.append(nEl);
+    }
+    if(d.flag){
+      var f = document.createElement("span");
+      f.className = "flag"; f.textContent = d.flag; li.append(f);
+    }
+    list.append(li);
+  });
+  if(shown === 0){
+    var p = document.createElement("p");
+    p.className = "message";
+    p.textContent = "No words match. Clear the search or pick another page.";
+    list.append(p);
+  }
+  document.getElementById("knownCount").textContent = known.size;
+}
+
+list.addEventListener("click", function(e){
+  var li = e.target.closest("li");
+  if(!li) return;
+  if(e.target.classList.contains("num")){
+    var n = DATA[li.dataset.i].n;
+    if(known.has(n)) known.delete(n); else known.add(n);
+    li.classList.toggle("known");
+    document.getElementById("knownCount").textContent = known.size;
+    saveKnown();
+    return;
+  }
+  if(document.body.classList.contains("quiz")) li.classList.toggle("shown");
+});
+list.addEventListener("keydown", function(e){
+  if((e.key === "Enter" || e.key === " ") && e.target.classList.contains("num")){
+    e.preventDefault(); e.target.click();
+  }
+});
+
+var quizBtn = document.getElementById("quiz");
+quizBtn.onclick = function(){
+  var on = document.body.classList.toggle("quiz");
+  quizBtn.setAttribute("aria-pressed", on);
+  Array.prototype.forEach.call(document.querySelectorAll("li.shown"), function(li){
+    li.classList.remove("shown");
+  });
+};
+var dirBtn = document.getElementById("dir");
+dirBtn.onclick = function(){
+  reversed = !reversed;
+  dirBtn.setAttribute("aria-pressed", reversed);
+  dirBtn.textContent = reversed ? "Ask in German" : "Ask in English";
+  render();
+};
+document.getElementById("shuffle").onclick = function(){
+  for(var i = order.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = order[i]; order[i] = order[j]; order[j] = t;
+  }
+  render();
+};
+document.getElementById("reset").onclick = function(){
+  order = DATA.map(function(_,i){ return i; }); render();
+};
+document.getElementById("search").addEventListener("input", function(e){
+  query = e.target.value.trim().toLowerCase(); render();
+});
+
+document.getElementById("csv").onclick = function(){
+  function esc(s){ return '"' + String(s).replace(/"/g,'""') + '"'; }
+  var rows = [["n","german","english","note"].map(esc).join(",")];
+  DATA.forEach(function(d){
+    var de = (d.art ? d.art + " " : "") + d.word + (d.extra || "");
+    rows.push([d.n, de, d.en || "", d.note || ""].map(esc).join(","));
+  });
+  var blob = new Blob(["\ufeff" + rows.join("\n")], {type:"text/csv;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "wortschatz.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+function saveKnown(){
+  try{ localStorage.setItem("wortschatz:known", JSON.stringify(Array.from(known))); }catch(e){}
+}
+function loadKnown(){
+  try{
+    var raw = localStorage.getItem("wortschatz:known");
+    if(raw) JSON.parse(raw).forEach(function(n){ known.add(n); });
+  }catch(e){}
+}
+</script>
+</body>
+</html>
